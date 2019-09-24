@@ -43,7 +43,7 @@ if (enable.get()) {
 }
 ```
 
-### Settings and ParamGroup classes
+### `Settings` and `ParamGroup` classes
 
 Where the `Parameter` classes represent an individual parameter, the `ParamGroup` and `Settings` classes represent groups of related parameters.
 
@@ -81,6 +81,13 @@ public:
   AnimalParams moose;
 };
 
+class ForestCHOP : public CHOP_CPlusPlusBase {
+public:
+  //...
+private:
+  ForestSettings _settings;
+};
+
 // Setting up the parameters
 void ForestCHOP::setupParameters(OP_ParameterManager* manager, void *reserved1)
 {
@@ -95,18 +102,33 @@ void ForestCHOP::pulsePressed(const char* name, void* reserved1)
 
 // Loading and using the values. This could would be done in the getOutputInfo()
 // method if the settings will influence the length of the CHOP.
-void ForestCHOP::execute(CHOP_Output* output,
-							  const OP_Inputs* inputs,
-							  void* reserved) {
+void ForestCHOP::execute(CHOP_Output* output, const OP_Inputs* inputs, void* reserved) {
   _settings.load(inputs);
-  
   if (_settings.bears.spawnNew.getAndReset()) {
-    createABear();
+    createABear(_settings.bears.cuteness.get());
   }
   if (_settings.moose.spawnNew.getAndReset()) {
-    makeMeAMoose();
+    makeMeAMoose(_settings.moose.cuteness.get());
   }
-  updateTheBears(_settings.bears.cuteness.get());
-  modifyTheMoose(_settings.moose.cuteness.get());
 }
 ```
+
+## CHOP Channels
+
+The channel classes are used for extracting values of various types from CHOP input channels.
+
+The original pattern that the classes were designed for was a particle simulation, where there are a number of channels and each sample represents a single particle, which has a field for each channel. But they can be used for other kinds of CHOPs.
+
+### `ChannelMap`
+
+The `ChannelMap` class is used to map channel names to/from channel indexes. The CHOP infrastructure only allows you to access channels by their number. But a CHOP might need to efficiently look them up by name.
+
+...
+
+### `OutputChannel<T>`
+
+...
+
+### `InputChannel<T>`
+
+...
