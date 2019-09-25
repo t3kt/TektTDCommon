@@ -127,8 +127,12 @@ The `ChannelMap` class is used to map channel names to/from channel indexes. The
 
 ### `OutputChannel<T>`
 
-...
+The `OutputChannel<T>` class represents one or more channels to which values can be written.
+
+For simple types like `int`, `float`, and `bool`, the object would only have a single associated CHOP channel. But for compound types like `Vector` and `Color`, the object would have 3 or 4 CHOP channels (e.g. "__x", "__y", "__z" for `Vector`).
 
 ### `InputChannel<T>`
+
+The `InputChannel<T>` class is equivalent to the `OutputChannel<T>` class, but for reading values from input channels.
 
 ...
