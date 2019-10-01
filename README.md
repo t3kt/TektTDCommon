@@ -121,15 +121,35 @@ The original pattern that the classes were designed for was a particle simulatio
 
 ### `ChannelMap`
 
-The `ChannelMap` class is used to map channel names to/from channel indexes. The CHOP infrastructure only allows you to access channels by their number. But a CHOP might need to efficiently look them up by name.
+The `ChannelMap` class is used to map channel names to/from channel indexes. The CHOP infrastructure only allows you to access channels by their number. But a CHOP might need to efficiently look them up by name. The channel map also supports cases where there are arbitrary other channels, which could be used to mirror them from input to output alongside updated values in some of the output channels.
 
-...
+`ChannelMap` provides low-level methods (compared to `InputChannel`/`OutputChannel`) for reading and writing values to/from CHOP channels by name.
+
+```c++
+ChannelMap channelMap {
+  "id", "tx", "ty", "tz",
+};
+```
 
 ### `OutputChannel<T>`
 
 The `OutputChannel<T>` class represents one or more channels to which values can be written.
 
 For simple types like `int`, `float`, and `bool`, the object would only have a single associated CHOP channel. But for compound types like `Vector` and `Color`, the object would have 3 or 4 CHOP channels (e.g. "__x", "__y", "__z" for `Vector`).
+
+Each channel has one or more names, as well as a default value. The default value is used by the `outputDefault(i)` method, which can be used to represent something like an empty slot in a list of possible entities.
+
+```c++
+// Set up channel objects with names and default values.
+OutputChannel<int> ids {{"id"}, -1};
+OutputChannel<CreatureType> types {{"type"}, CreatureType::INVALID};
+OutputChannel<Vector> positions {{"tx", "ty", "tz}, Vector(0, 0, 0)};
+std::vector<OutputChannelBase> outputChannels { &ids, &types, &positions };
+
+ChannelMap channelMap {"id", "tx", "ty", "tz"};
+
+
+```
 
 ### `InputChannel<T>`
 
